@@ -2,7 +2,7 @@
   "name": "bionic-markdown-preview",
   "displayName": "Bionic Markdown Preview",
   "description": "Preview Markdown with Bionic Reading and Gradient Reading for faster, more focused reading",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "publisher": "BionicMarkdown",
   "icon": "media/icon.png",
   "license": "MIT",
@@ -18,8 +18,7 @@
     "vscode": "^1.80.0"
   },
   "categories": [
-    "Other",
-    "Visualization"
+    "Other"
   ],
   "keywords": [
     "markdown",
