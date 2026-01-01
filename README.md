@@ -41,7 +41,6 @@ Choose from 10 beautiful gradient themes:
 ## Links
 
 - [Web App](https://bionicmarkdown.com)
-- [Changelog](CHANGELOG.md)
 
 ## License
 
