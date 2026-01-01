@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.5] - 2025-01-01
+
+### Added
+- Open source release
+- Repository and issue tracking links
+
 ## [0.1.4] - 2025-01-01
 
 ### Added
