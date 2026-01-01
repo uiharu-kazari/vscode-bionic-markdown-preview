@@ -1,7 +1,23 @@
-<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="128" height="128" rx="24" fill="#10b981"/>
-  <rect x="32" y="24" width="16" height="80" fill="white"/>
-  <rect x="64" y="32" width="32" height="16" fill="white"/>
-  <rect x="64" y="56" width="24" height="16" fill="white"/>
-  <rect x="64" y="80" width="40" height="16" fill="white"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="128" fill="#10b981"/>
+  <!-- Left Column (Raw Text) -->
+  <rect x="80" y="120" width="160" height="272" rx="10" fill="white" fill-opacity="0.2"/>
+  <rect x="100" y="150" width="120" height="12" rx="6" fill="white" fill-opacity="0.6"/>
+  <rect x="100" y="180" width="80" height="12" rx="6" fill="white" fill-opacity="0.6"/>
+  <rect x="100" y="210" width="100" height="12" rx="6" fill="white" fill-opacity="0.6"/>
+  
+  <!-- Divider -->
+  <rect x="254" y="100" width="4" height="312" rx="2" fill="white" fill-opacity="0.4"/>
+  
+  <!-- Right Column (Bionic Preview) -->
+  <rect x="272" y="120" width="160" height="272" rx="10" fill="white"/>
+  <!-- Bionic Lines -->
+  <rect x="292" y="150" width="40" height="12" rx="6" fill="#10b981"/>
+  <rect x="337" y="150" width="75" height="12" rx="6" fill="#cbd5e1"/>
+  
+  <rect x="292" y="180" width="30" height="12" rx="6" fill="#10b981"/>
+  <rect x="327" y="180" width="50" height="12" rx="6" fill="#cbd5e1"/>
+  
+  <rect x="292" y="210" width="50" height="12" rx="6" fill="#10b981"/>
+  <rect x="347" y="210" width="50" height="12" rx="6" fill="#cbd5e1"/>
 </svg>

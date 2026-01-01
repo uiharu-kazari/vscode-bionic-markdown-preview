@@ -43,17 +43,50 @@ export function getWebviewContent(
     }
 
     /* Toolbar styles */
-    .toolbar {
+    .toolbar-container {
       position: sticky;
       top: 0;
       z-index: 100;
       background: var(--vscode-editor-background);
       border-bottom: 1px solid var(--vscode-panel-border);
+    }
+
+    .toolbar {
       padding: 8px 16px;
       display: flex;
       flex-wrap: wrap;
       gap: 16px;
       align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .toolbar.hidden {
+      display: none;
+    }
+
+    .toolbar-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 4px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--vscode-descriptionForeground);
+      transition: color 0.2s;
+    }
+
+    .toolbar-toggle:hover {
+      color: var(--vscode-foreground);
+    }
+
+    .toolbar-toggle svg {
+      transition: transform 0.2s;
+    }
+
+    .toolbar-toggle.collapsed svg {
+      transform: rotate(180deg);
     }
 
     .toolbar-group {
@@ -242,52 +275,59 @@ export function getWebviewContent(
   </style>
 </head>
 <body>
-  <div class="toolbar">
-    <div class="toolbar-group">
-      <span class="toolbar-label">Leading</span>
-      <input type="range" id="fixation" min="1" max="5" step="1" value="${settings.fixationPoint}">
-      <span class="value-display" id="fixation-value">${settings.fixationPoint}</span>
-    </div>
+  <div class="toolbar-container">
+    <div class="toolbar" id="toolbar">
+      <div class="toolbar-group">
+        <span class="toolbar-label">Leading</span>
+        <input type="range" id="fixation" min="1" max="5" step="1" value="${settings.fixationPoint}">
+        <span class="value-display" id="fixation-value">${settings.fixationPoint}</span>
+      </div>
 
-    <div class="toolbar-group">
-      <span class="toolbar-label">Opacity</span>
-      <input type="range" id="opacity" min="0" max="100" step="1" value="${Math.round(settings.opacity * 100)}">
-      <span class="value-display" id="opacity-value">${Math.round(settings.opacity * 100)}%</span>
-    </div>
+      <div class="toolbar-group">
+        <span class="toolbar-label">Opacity</span>
+        <input type="range" id="opacity" min="0" max="100" step="1" value="${Math.round(settings.opacity * 100)}">
+        <span class="value-display" id="opacity-value">${Math.round(settings.opacity * 100)}%</span>
+      </div>
 
-    <div class="toolbar-group">
-      <span class="toolbar-label">Gradient</span>
-      <select id="gradient">
-        <option value="none">None</option>
-        <option value="ocean">Ocean</option>
-        <option value="sunset">Sunset</option>
-        <option value="forest">Forest</option>
-        <option value="berry">Berry</option>
-        <option value="lavender">Lavender</option>
-        <option value="autumn">Autumn</option>
-        <option value="mint">Mint</option>
-        <option value="twilight">Twilight</option>
-        <option value="coffee">Coffee</option>
-        <option value="monochrome">Monochrome</option>
-      </select>
-      <div class="gradient-preview" id="gradient-preview"></div>
-    </div>
+      <div class="toolbar-group">
+        <span class="toolbar-label">Gradient</span>
+        <select id="gradient">
+          <option value="none">None</option>
+          <option value="ocean">Ocean</option>
+          <option value="sunset">Sunset</option>
+          <option value="forest">Forest</option>
+          <option value="berry">Berry</option>
+          <option value="lavender">Lavender</option>
+          <option value="autumn">Autumn</option>
+          <option value="mint">Mint</option>
+          <option value="twilight">Twilight</option>
+          <option value="coffee">Coffee</option>
+          <option value="monochrome">Monochrome</option>
+        </select>
+        <div class="gradient-preview" id="gradient-preview"></div>
+      </div>
 
-    <div class="toolbar-group">
-      <svg class="toolbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+      <div class="toolbar-group">
+        <svg class="toolbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+        </svg>
+        <input type="range" id="fontSize" min="12" max="24" step="1" value="${settings.fontSize}">
+        <span class="value-display" id="fontSize-value">${settings.fontSize}</span>
+      </div>
+
+      <div class="toolbar-group">
+        <svg class="toolbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+        <input type="range" id="lineHeight" min="1.2" max="2" step="0.1" value="${settings.lineHeight}">
+        <span class="value-display" id="lineHeight-value">${settings.lineHeight}</span>
+      </div>
+    </div>
+    <button class="toolbar-toggle" id="toolbar-toggle" title="Toggle toolbar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="18 15 12 9 6 15"></polyline>
       </svg>
-      <input type="range" id="fontSize" min="12" max="24" step="1" value="${settings.fontSize}">
-      <span class="value-display" id="fontSize-value">${settings.fontSize}</span>
-    </div>
-
-    <div class="toolbar-group">
-      <svg class="toolbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-      <input type="range" id="lineHeight" min="1.2" max="2" step="0.1" value="${settings.lineHeight}">
-      <span class="value-display" id="lineHeight-value">${settings.lineHeight}</span>
-    </div>
+    </button>
   </div>
 
   <div id="preview">
@@ -432,6 +472,15 @@ export function getWebviewContent(
     // Initialize gradient select
     gradientSelect.value = currentSettings.gradientTheme;
     updateGradientPreview(currentSettings.gradientTheme);
+
+    // Toolbar toggle
+    const toolbar = document.getElementById('toolbar');
+    const toolbarToggle = document.getElementById('toolbar-toggle');
+
+    toolbarToggle.addEventListener('click', () => {
+      toolbar.classList.toggle('hidden');
+      toolbarToggle.classList.toggle('collapsed');
+    });
 
     // Toolbar event listeners
     fixationInput.addEventListener('input', (e) => {
