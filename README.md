@@ -1,10 +1,6 @@
-# Bionic Markdown Preview
-
-[![Visual Studio Marketplace](https://img.shields.io/visual-studio-marketplace/v/BionicMarkdown.bionic-markdown-preview)](https://marketplace.visualstudio.com/items?itemName=BionicMarkdown.bionic-markdown-preview)
-
 Preview Markdown with **Bionic Reading** and **Gradient Reading** for faster, more focused reading - right inside VS Code.
 
-> Also available as a web app at [bionicmarkdown.com](https://bionicmarkdown.com)
+Also available as a web app at [bionicmarkdown.com](https://bionicmarkdown.com)
 
 ## Features
 
@@ -43,14 +39,6 @@ Choose from 10 beautiful gradient themes:
 - Ocean, Sunset, Forest, Berry, Lavender
 - Autumn, Mint, Twilight, Coffee, Monochrome
 
-## Links
+## Support
 
-- [Web App](https://bionicmarkdown.com)
-- [GitHub](https://github.com/uiharu-kazari/vscode-bionic-markdown-preview)
-- [Report Issues](https://github.com/uiharu-kazari/vscode-bionic-markdown-preview/issues)
-- [Changelog](CHANGELOG.md)
-- [Support on Ko-fi](https://ko-fi.com/illyasviel1120)
-
-## License
-
-MIT
+If you find this extension helpful, consider [supporting on Ko-fi](https://ko-fi.com/illyasviel1120).
