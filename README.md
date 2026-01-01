@@ -41,7 +41,6 @@ Choose from 10 beautiful gradient themes:
 ## Links
 
 - [Web App](https://bionicmarkdown.com)
-- [Report Issues](https://github.com/uiharu-kazari/vscode-bionic-markdown-preview/issues)
 - [Changelog](CHANGELOG.md)
 
 ## License
