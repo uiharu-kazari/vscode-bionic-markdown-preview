@@ -1,0 +1,144 @@
+{
+  "name": "bionic-markdown-preview",
+  "displayName": "Bionic Markdown Preview",
+  "description": "Preview Markdown with Bionic Reading and Gradient Reading for faster, more focused reading",
+  "version": "0.1.0",
+  "publisher": "BionicMarkdown",
+  "icon": "media/icon.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/vscode-bionic-preview"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "markdown",
+    "preview",
+    "bionic reading",
+    "reading",
+    "accessibility"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "bionicPreview.open",
+        "title": "Open Bionic Preview",
+        "category": "Bionic Markdown"
+      },
+      {
+        "command": "bionicPreview.openToSide",
+        "title": "Open Bionic Preview to the Side",
+        "category": "Bionic Markdown"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "bionicPreview.openToSide",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "bionicPreview.open",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "bionicPreview.open",
+          "when": "editorLangId == markdown"
+        },
+        {
+          "command": "bionicPreview.openToSide",
+          "when": "editorLangId == markdown"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Bionic Markdown Preview",
+      "properties": {
+        "bionicPreview.fixationPoint": {
+          "type": "number",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Number of characters to bold at the start of each word (1-5)"
+        },
+        "bionicPreview.opacity": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0.1,
+          "maximum": 1,
+          "description": "Opacity of non-bolded text (0.1-1.0)"
+        },
+        "bionicPreview.gradientTheme": {
+          "type": "string",
+          "default": "none",
+          "enum": [
+            "none",
+            "ocean",
+            "sunset",
+            "forest",
+            "berry",
+            "lavender",
+            "autumn",
+            "mint",
+            "twilight",
+            "coffee",
+            "monochrome"
+          ],
+          "description": "Gradient theme for line coloring"
+        },
+        "bionicPreview.fontSize": {
+          "type": "number",
+          "default": 16,
+          "minimum": 10,
+          "maximum": 32,
+          "description": "Font size in pixels"
+        },
+        "bionicPreview.lineHeight": {
+          "type": "number",
+          "default": 1.8,
+          "minimum": 1,
+          "maximum": 3,
+          "description": "Line height multiplier"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/dompurify": "^3.0.5",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "dompurify": "^3.3.1",
+    "jsdom": "^24.0.0",
+    "markdown-it": "^14.1.0",
+    "text-vide": "^1.8.4"
+  }
+}
