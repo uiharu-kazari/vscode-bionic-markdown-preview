@@ -1,63 +1,49 @@
 # Bionic Markdown Preview
 
-A VSCode extension that previews Markdown with Bionic Reading and Gradient Reading for faster, more focused reading.
+[![Visual Studio Marketplace](https://img.shields.io/visual-studio-marketplace/v/BionicMarkdown.bionic-markdown-preview)](https://marketplace.visualstudio.com/items?itemName=BionicMarkdown.bionic-markdown-preview)
+
+Preview Markdown with **Bionic Reading** and **Gradient Reading** for faster, more focused reading - right inside VS Code.
+
+> Also available as a web app at [bionicmarkdown.com](https://bionicmarkdown.com)
 
 ## Features
 
-- **Bionic Reading**: Automatically bolds the initial portions of words to guide your eye along text more efficiently
-- **Gradient Reading**: Applies color gradients to help track lines visually
-- **Live Preview**: Updates in real-time as you type
-- **Configurable**: Adjust fixation point, opacity, font size, and more
+- **Bionic Reading** - Bolds the initial portions of words to guide your eye along text more efficiently
+- **Gradient Reading** - Applies color gradients to help track lines visually
+- **Live Preview** - Updates in real-time as you type
+- **Customizable** - Adjust leading, opacity, gradient theme, font size, and line height
 
 ## Usage
 
-1. Open a Markdown file
-2. Run the command `Bionic Markdown: Open Bionic Preview to the Side` from the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
-3. Or right-click in the editor and select "Open Bionic Preview"
+1. Open any Markdown file
+2. Open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
+3. Run **"Bionic Markdown: Open Bionic Preview to the Side"**
 
-## Settings
+Or right-click in any Markdown file and select "Open Bionic Preview".
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `bionicPreview.fixationPoint` | 3 | Characters to bold at word start (1-5) |
-| `bionicPreview.opacity` | 0.7 | Opacity of non-bolded text (0.1-1.0) |
-| `bionicPreview.gradientTheme` | none | Gradient theme for line coloring |
-| `bionicPreview.fontSize` | 16 | Font size in pixels |
-| `bionicPreview.lineHeight` | 1.8 | Line height multiplier |
+## Toolbar Controls
 
-### Gradient Themes
+| Control | Description |
+|---------|-------------|
+| **Leading** | How many characters to bold (1-5) |
+| **Opacity** | Opacity of non-bolded text (0-100%) |
+| **Gradient** | Color theme for line coloring |
+| **Font Size** | Preview font size (12-24px) |
+| **Line Height** | Line spacing (1.2-2.0) |
 
-- `none` - No gradient
-- `ocean` - Blue/teal tones
-- `sunset` - Orange/red tones
-- `forest` - Green tones
-- `berry` - Pink/purple tones
-- `lavender` - Purple tones
-- `autumn` - Brown/orange tones
-- `mint` - Teal/green tones
-- `twilight` - Deep purple tones
-- `coffee` - Brown tones
-- `monochrome` - Gray tones
+## Gradient Themes
 
-## Development
+Choose from 10 beautiful gradient themes:
 
-```bash
-# Install dependencies
-npm install
+- Ocean, Sunset, Forest, Berry, Lavender
+- Autumn, Mint, Twilight, Coffee, Monochrome
 
-# Compile TypeScript
-npm run compile
+## Links
 
-# Watch for changes
-npm run watch
+- [Web App](https://bionicmarkdown.com)
+- [Report Issues](https://github.com/uiharu-kazari/vscode-bionic-markdown-preview/issues)
+- [Changelog](CHANGELOG.md)
 
-# Package extension
-npm run package
-```
+## License
 
-## Testing Locally
-
-1. Open this folder in VSCode
-2. Press `F5` to launch Extension Development Host
-3. Open a `.md` file in the new window
-4. Run the command "Open Bionic Preview to the Side"
+MIT
