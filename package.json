@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/vscode-bionic-preview"
+    "url": "https://github.com/uiharu-kazari/vscode-bionic-preview"
   },
   "engines": {
     "vscode": "^1.80.0"
