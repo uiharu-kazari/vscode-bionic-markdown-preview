@@ -41,6 +41,8 @@ Choose from 10 beautiful gradient themes:
 ## Links
 
 - [Web App](https://bionicmarkdown.com)
+- [Feedback](https://docs.google.com/forms/d/e/1FAIpQLSe7mHo47nveeSDXLTPIba4BBI_qcIORTk4ObJMY-Slf8xrrOQ/viewform)
+- [Support on Ko-fi](https://ko-fi.com/illyasviel1120)
 
 ## License
 
