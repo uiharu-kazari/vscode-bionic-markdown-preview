@@ -8,10 +8,11 @@ Preview Markdown with **Bionic Reading** and **Gradient Reading** for faster, mo
 
 ## Features
 
-- **Bionic Reading** - Bolds the initial portions of words to guide your eye along text more efficiently
-- **Gradient Reading** - Applies color gradients to help track lines visually
+- **Bionic Reading** - Bolds the beginning of each word to help guide your eyes through text faster
+- **Gradient Reading** - Applies color gradients to make it easier to track lines visually
 - **Live Preview** - Updates in real-time as you type
-- **Customizable** - Adjust leading, opacity, gradient theme, font size, and line height
+- **Fully Customizable** - Easily adjust reading settings via the built-in toolbar
+- **Collapsible Toolbar** - Hide or show the toolbar to maximize your reading space
 
 ## Usage
 
@@ -23,13 +24,17 @@ Or right-click in any Markdown file and select "Open Bionic Preview".
 
 ## Toolbar Controls
 
+All settings can be adjusted instantly from the toolbar:
+
 | Control | Description |
 |---------|-------------|
-| **Leading** | How many characters to bold (1-5) |
+| **Leading** | Number of characters to bold (1-5) |
 | **Opacity** | Opacity of non-bolded text (0-100%) |
-| **Gradient** | Color theme for line coloring |
+| **Gradient** | Color theme for line highlighting |
 | **Font Size** | Preview font size (12-24px) |
 | **Line Height** | Line spacing (1.2-2.0) |
+
+Click the chevron button to collapse or expand the toolbar.
 
 ## Gradient Themes
 
@@ -41,7 +46,9 @@ Choose from 10 beautiful gradient themes:
 ## Links
 
 - [Web App](https://bionicmarkdown.com)
-- [Feedback](https://docs.google.com/forms/d/e/1FAIpQLSe7mHo47nveeSDXLTPIba4BBI_qcIORTk4ObJMY-Slf8xrrOQ/viewform)
+- [GitHub](https://github.com/uiharu-kazari/vscode-bionic-markdown-preview)
+- [Report Issues](https://github.com/uiharu-kazari/vscode-bionic-markdown-preview/issues)
+- [Changelog](CHANGELOG.md)
 - [Support on Ko-fi](https://ko-fi.com/illyasviel1120)
 
 ## License

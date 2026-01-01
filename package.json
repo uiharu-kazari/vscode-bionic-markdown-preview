@@ -7,6 +7,13 @@
   "icon": "media/icon.png",
   "license": "MIT",
   "homepage": "https://bionicmarkdown.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uiharu-kazari/vscode-bionic-markdown-preview"
+  },
+  "bugs": {
+    "url": "https://github.com/uiharu-kazari/vscode-bionic-markdown-preview/issues"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
