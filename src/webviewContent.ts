@@ -596,17 +596,20 @@ export function getWebviewContent(
     }
 
     // Apply bionic reading to text
+    // Uses text-vide algorithm: ceil(length / (7 - fixationPoint))
+    // UI fixationPoint 1-5: higher = more bold
     function applyBionicReading(text, fixationPoint) {
       const words = text.split(/(\\s+)/);
       return words.map(word => {
         if (!word.trim()) return word;
 
-        // Calculate how many characters to bold
+        // Calculate how many characters to bold using text-vide formula
         const length = word.length;
-        const boldLength = Math.min(
-          Math.max(1, Math.ceil(length * (fixationPoint / 5))),
-          length
-        );
+        if (length <= 1) return '<b>' + word + '</b>';
+
+        // divisor: FP1=6(least), FP3=4(medium), FP5=2(most)
+        const divisor = 7 - fixationPoint;
+        const boldLength = Math.max(1, Math.min(Math.ceil(length / divisor), length));
 
         const boldPart = word.slice(0, boldLength);
         const dimPart = word.slice(boldLength);
