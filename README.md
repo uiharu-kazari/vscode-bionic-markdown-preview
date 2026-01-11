@@ -1,6 +1,12 @@
 Preview Markdown with **Bionic Reading** and **Gradient Reading** for faster, more focused reading - right inside VS Code.
 
-Also available as a web app at [bionicmarkdown.com](https://bionicmarkdown.com)
+## Also Available On
+
+| Platform | Link |
+|----------|------|
+| **Web App** | [bionicmarkdown.com](https://bionicmarkdown.com) |
+| **VS Code** | You are here! |
+| **Chrome** | [Chrome Web Store](https://github.com/uiharu-kazari/chrome-bionic-preview) (coming soon) |
 
 ## Features
 
