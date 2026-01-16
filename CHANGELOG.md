@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [0.2.0] - 2026-01-11
 
 ### Fixed
-- Aligned bionic reading algorithm with text-vide library
+- Aligned text highlighting algorithm with text-vide library
 - Formula now uses `floor(length * fixationPoint / 6)` for accurate highlighting
 - More conservative bolding that matches bionicmarkdown.com web app
 
@@ -45,7 +45,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Initial release
-- Bionic Reading preview for Markdown files
+- Bold text highlighting preview for Markdown files
 - Gradient Reading with 10 color themes
 - Live preview that updates as you type
 - Customizable settings:

@@ -1,7 +1,7 @@
 {
   "name": "bionic-markdown-preview",
   "displayName": "Bionic Markdown Preview",
-  "description": "Preview Markdown with Bionic Reading and Gradient Reading for faster, more focused reading",
+  "description": "Preview Markdown with bold text highlighting and gradient themes for faster, more focused reading",
   "version": "0.2.0",
   "publisher": "BionicMarkdown",
   "icon": "media/icon.png",
@@ -23,9 +23,10 @@
   "keywords": [
     "markdown",
     "preview",
-    "bionic reading",
+    "reading aid",
     "reading",
-    "accessibility"
+    "accessibility",
+    "productivity"
   ],
   "activationEvents": [
     "onLanguage:markdown"

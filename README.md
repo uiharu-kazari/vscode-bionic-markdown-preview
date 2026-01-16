@@ -1,4 +1,4 @@
-Preview Markdown with **Bionic Reading** and **Gradient Reading** for faster, more focused reading - right inside VS Code.
+Preview Markdown with **bold text highlighting** and **gradient themes** for faster, more focused reading - right inside VS Code.
 
 ## Also Available On
 
@@ -10,8 +10,8 @@ Preview Markdown with **Bionic Reading** and **Gradient Reading** for faster, mo
 
 ## Features
 
-- **Bionic Reading** - Bolds the beginning of each word to help guide your eyes through text faster
-- **Gradient Reading** - Applies color gradients to make it easier to track lines visually
+- **Bold Text Highlighting** - Bolds the beginning of each word to help guide your eyes through text faster
+- **Gradient Themes** - Applies color gradients to make it easier to track lines visually
 - **Live Preview** - Updates in real-time as you type
 - **Fully Customizable** - Easily adjust reading settings via the built-in toolbar
 - **Collapsible Toolbar** - Hide or show the toolbar to maximize your reading space
