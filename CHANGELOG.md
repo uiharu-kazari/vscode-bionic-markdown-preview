@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-01-16
+
+### Changed
+- Updated descriptions and terminology for clarity
+- Improved marketplace metadata
+
 ## [0.2.0] - 2026-01-11
 
 ### Fixed
