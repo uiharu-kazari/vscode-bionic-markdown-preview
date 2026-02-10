@@ -529,15 +529,39 @@ export function getWebviewContent(
 
     // Simple markdown parser (basic implementation)
     function parseMarkdown(md) {
-      let html = md
-        // Escape HTML
+      // Extract code blocks first to protect them from other transformations
+      const codeBlocks = [];
+      const inlineCodes = [];
+
+      // Extract fenced code blocks (```...```)
+      let html = md.replace(/\`\`\`([\\s\\S]*?)\`\`\`/g, (match, code) => {
+        const placeholder = '%%CODEBLOCK_' + codeBlocks.length + '%%';
+        // Escape HTML in code blocks
+        const escapedCode = code
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        codeBlocks.push('<pre><code>' + escapedCode + '</code></pre>');
+        return placeholder;
+      });
+
+      // Extract inline code (`...`)
+      html = html.replace(/\`([^\`]+)\`/g, (match, code) => {
+        const placeholder = '%%INLINECODE_' + inlineCodes.length + '%%';
+        // Escape HTML in inline code
+        const escapedCode = code
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        inlineCodes.push('<code>' + escapedCode + '</code>');
+        return placeholder;
+      });
+
+      // Now process the rest - escape HTML first
+      html = html
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-
-        // Code blocks (before other processing)
-        .replace(/\`\`\`([\\s\\S]*?)\`\`\`/g, '<pre><code>$1</code></pre>')
-        .replace(/\`([^\`]+)\`/g, '<code>$1</code>')
 
         // Headers
         .replace(/^###### (.*$)/gm, '<h6>$1</h6>')
@@ -591,6 +615,16 @@ export function getWebviewContent(
       // Wrap lists
       html = html.replace(/(<li>.*<\\/li>)/gs, '<ul>$1</ul>');
       html = html.replace(/<\\/ul><ul>/g, '');
+
+      // Restore code blocks
+      codeBlocks.forEach((block, i) => {
+        html = html.replace('%%CODEBLOCK_' + i + '%%', block);
+      });
+
+      // Restore inline code
+      inlineCodes.forEach((code, i) => {
+        html = html.replace('%%INLINECODE_' + i + '%%', code);
+      });
 
       return html;
     }

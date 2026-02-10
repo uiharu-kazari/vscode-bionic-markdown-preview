@@ -6,7 +6,7 @@ Preview Markdown with **bold text highlighting** and **gradient themes** for fas
 |----------|------|
 | **Web App** | [bionicmarkdown.com](https://bionicmarkdown.com) |
 | **VS Code** | You are here! |
-| **Chrome** | [Chrome Web Store](https://github.com/uiharu-kazari/chrome-bionic-preview) (coming soon) |
+| **Chrome** | [GitHub](https://github.com/uiharu-kazari/chrome-bionic-preview) |
 
 ## Features
 
