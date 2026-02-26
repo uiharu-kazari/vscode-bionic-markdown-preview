@@ -272,6 +272,22 @@ export function getWebviewContent(
       color: var(--vscode-descriptionForeground);
       padding: 40px;
     }
+
+    /* Math formula styles */
+    .math-display {
+      display: block;
+      text-align: center;
+      margin: 1em 0;
+      overflow-x: auto;
+    }
+
+    .math-display math {
+      font-size: 1.2em;
+    }
+
+    .math-inline math {
+      font-size: 1.1em;
+    }
   </style>
 </head>
 <body>
@@ -451,8 +467,9 @@ export function getWebviewContent(
       lineHeight: ${settings.lineHeight},
     };
 
-    // Store current markdown
+    // Store current markdown and math data
     let currentMarkdown = '';
+    let currentMathRendered = [];
 
     const vscode = acquireVsCodeApi();
     const preview = document.getElementById('preview');
@@ -528,12 +545,27 @@ export function getWebviewContent(
     }
 
     // Simple markdown parser (basic implementation)
-    function parseMarkdown(md) {
+    function parseMarkdown(md, mathRendered) {
+      // Extract math placeholders first to protect from transformations
+      const mathPlaceholders = [];
+      if (mathRendered && mathRendered.length > 0) {
+        for (const m of mathRendered) {
+          if (md.includes(m.id)) {
+            const placeholder = '%%MATH_' + mathPlaceholders.length + '%%';
+            const wrapper = m.display
+              ? '<div class="math-display">' + m.html + '</div>'
+              : '<span class="math-inline">' + m.html + '</span>';
+            mathPlaceholders.push({ placeholder, html: wrapper });
+            md = md.replace(m.id, placeholder);
+          }
+        }
+      }
+
       // Extract code blocks first to protect them from other transformations
       const codeBlocks = [];
       const inlineCodes = [];
 
-      // Extract fenced code blocks (```...```)
+      // Extract fenced code blocks
       let html = md.replace(/\`\`\`([\\s\\S]*?)\`\`\`/g, (match, code) => {
         const placeholder = '%%CODEBLOCK_' + codeBlocks.length + '%%';
         // Escape HTML in code blocks
@@ -545,7 +577,7 @@ export function getWebviewContent(
         return placeholder;
       });
 
-      // Extract inline code (`...`)
+      // Extract inline code
       html = html.replace(/\`([^\`]+)\`/g, (match, code) => {
         const placeholder = '%%INLINECODE_' + inlineCodes.length + '%%';
         // Escape HTML in inline code
@@ -626,6 +658,13 @@ export function getWebviewContent(
         html = html.replace('%%INLINECODE_' + i + '%%', code);
       });
 
+      // Restore math blocks
+      mathPlaceholders.forEach((m, i) => {
+        // Display math may be wrapped in <p> tags
+        html = html.replace('<p>%%MATH_' + i + '%%</p>', m.html);
+        html = html.replace('%%MATH_' + i + '%%', m.html);
+      });
+
       return html;
     }
 
@@ -655,7 +694,8 @@ export function getWebviewContent(
 
     // Process HTML with bionic reading
     function processBionic(html, fixationPoint) {
-      const skipTags = ['CODE', 'PRE', 'A', 'SCRIPT', 'STYLE'];
+      const skipTags = ['CODE', 'PRE', 'A', 'SCRIPT', 'STYLE', 'MATH'];
+      const skipClasses = ['math-inline', 'math-display'];
       const container = document.createElement('div');
       container.innerHTML = html;
 
@@ -670,7 +710,8 @@ export function getWebviewContent(
           wrapper.innerHTML = applyBionicReading(node.textContent, fixationPoint);
           node.parentNode.replaceChild(wrapper, node);
         } else if (node.nodeType === Node.ELEMENT_NODE) {
-          if (!skipTags.includes(node.tagName)) {
+          if (!skipTags.includes(node.tagName) &&
+              !skipClasses.some(cls => node.classList && node.classList.contains(cls))) {
             Array.from(node.childNodes).forEach(processNode);
           }
         }
@@ -726,8 +767,8 @@ export function getWebviewContent(
       document.documentElement.style.setProperty('--line-height', currentSettings.lineHeight);
       document.documentElement.style.setProperty('--dim-opacity', currentSettings.opacity);
 
-      // Parse markdown
-      let html = parseMarkdown(currentMarkdown);
+      // Parse markdown (with pre-rendered math)
+      let html = parseMarkdown(currentMarkdown, currentMathRendered);
 
       // Apply bionic reading
       html = processBionic(html, currentSettings.fixationPoint);
@@ -748,6 +789,7 @@ export function getWebviewContent(
       switch (message.type) {
         case 'update':
           currentMarkdown = message.content;
+          currentMathRendered = message.mathRendered || [];
           render();
           break;
 

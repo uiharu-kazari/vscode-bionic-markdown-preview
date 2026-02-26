@@ -1,5 +1,74 @@
 import * as vscode from 'vscode';
+import katex from 'katex';
 import { getWebviewContent } from './webviewContent';
+
+interface MathRendered {
+  id: string;
+  html: string;
+  display: boolean;
+}
+
+/**
+ * Extract math expressions from markdown, render with KaTeX, and replace with placeholders.
+ */
+function preprocessMath(markdown: string): { processed: string; mathRendered: MathRendered[] } {
+  const mathRendered: MathRendered[] = [];
+  let processed = markdown;
+
+  // Protect code blocks and inline code
+  const codeProtections: Array<{ placeholder: string; original: string }> = [];
+
+  processed = processed.replace(/```[\s\S]*?```/g, (match) => {
+    const placeholder = `\x00CODE${codeProtections.length}\x00`;
+    codeProtections.push({ placeholder, original: match });
+    return placeholder;
+  });
+
+  processed = processed.replace(/`[^`]+`/g, (match) => {
+    const placeholder = `\x00CODE${codeProtections.length}\x00`;
+    codeProtections.push({ placeholder, original: match });
+    return placeholder;
+  });
+
+  // Display math: $$...$$
+  processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
+    const id = `MATHBLOCK${mathRendered.length}ENDMATH`;
+    try {
+      const html = katex.renderToString(math.trim(), {
+        displayMode: true,
+        throwOnError: false,
+        output: 'mathml',
+      });
+      mathRendered.push({ id, html, display: true });
+    } catch {
+      mathRendered.push({ id, html: `<code>${math.trim()}</code>`, display: true });
+    }
+    return id;
+  });
+
+  // Inline math: $...$
+  processed = processed.replace(/(?<![\\$])\$(?!\s)([^\$\n]+?)(?<!\s)\$(?!\$)/g, (_, math) => {
+    const id = `MATHBLOCK${mathRendered.length}ENDMATH`;
+    try {
+      const html = katex.renderToString(math.trim(), {
+        displayMode: false,
+        throwOnError: false,
+        output: 'mathml',
+      });
+      mathRendered.push({ id, html, display: false });
+    } catch {
+      mathRendered.push({ id, html: `<code>${math.trim()}</code>`, display: false });
+    }
+    return id;
+  });
+
+  // Restore code blocks
+  for (const { placeholder, original } of codeProtections) {
+    processed = processed.replace(placeholder, original);
+  }
+
+  return { processed, mathRendered };
+}
 
 export class BionicPreviewPanel {
   public static currentPanel: BionicPreviewPanel | undefined;
@@ -39,9 +108,11 @@ export class BionicPreviewPanel {
 
   public static updateContent(markdown: string) {
     if (BionicPreviewPanel.currentPanel) {
+      const { processed, mathRendered } = preprocessMath(markdown);
       BionicPreviewPanel.currentPanel._panel.webview.postMessage({
         type: 'update',
-        content: markdown,
+        content: processed,
+        mathRendered,
       });
     }
   }
