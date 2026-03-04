@@ -18,7 +18,7 @@ function preprocessMath(markdown: string): { processed: string; mathRendered: Ma
   // Protect code blocks and inline code
   const codeProtections: Array<{ placeholder: string; original: string }> = [];
 
-  processed = processed.replace(/```[\s\S]*?```/g, (match) => {
+  processed = processed.replace(/(?:```|~~~)[\s\S]*?(?:```|~~~)/g, (match) => {
     const placeholder = `\x00CODE${codeProtections.length}\x00`;
     codeProtections.push({ placeholder, original: match });
     return placeholder;
@@ -46,8 +46,8 @@ function preprocessMath(markdown: string): { processed: string; mathRendered: Ma
     return id;
   });
 
-  // Inline math: $...$
-  processed = processed.replace(/(?<![\\$])\$(?!\s)([^\$\n]+?)(?<!\s)\$(?!\$)/g, (_, math) => {
+  // Inline math: $...$ (must contain a letter or backslash)
+  processed = processed.replace(/(?<![\\$])\$(?!\s)([^\$\n]*[a-zA-Z\\][^\$\n]*?)(?<!\s)\$(?!\$)/g, (_, math) => {
     const id = `MATHBLOCK${mathRendered.length}ENDMATH`;
     try {
       const html = katex.renderToString(math.trim(), {
@@ -62,9 +62,9 @@ function preprocessMath(markdown: string): { processed: string; mathRendered: Ma
     return id;
   });
 
-  // Restore code blocks
+  // Restore code blocks (use function replacement to avoid $ special patterns)
   for (const { placeholder, original } of codeProtections) {
-    processed = processed.replace(placeholder, original);
+    processed = processed.replace(placeholder, () => original);
   }
 
   return { processed, mathRendered };

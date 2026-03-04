@@ -648,21 +648,21 @@ export function getWebviewContent(
       html = html.replace(/(<li>.*<\\/li>)/gs, '<ul>$1</ul>');
       html = html.replace(/<\\/ul><ul>/g, '');
 
-      // Restore code blocks
+      // Restore code blocks (function replacement avoids $ special patterns)
       codeBlocks.forEach((block, i) => {
-        html = html.replace('%%CODEBLOCK_' + i + '%%', block);
+        html = html.replace('%%CODEBLOCK_' + i + '%%', function() { return block; });
       });
 
       // Restore inline code
       inlineCodes.forEach((code, i) => {
-        html = html.replace('%%INLINECODE_' + i + '%%', code);
+        html = html.replace('%%INLINECODE_' + i + '%%', function() { return code; });
       });
 
       // Restore math blocks
       mathPlaceholders.forEach((m, i) => {
         // Display math may be wrapped in <p> tags
-        html = html.replace('<p>%%MATH_' + i + '%%</p>', m.html);
-        html = html.replace('%%MATH_' + i + '%%', m.html);
+        html = html.replace('<p>%%MATH_' + i + '%%</p>', function() { return m.html; });
+        html = html.replace('%%MATH_' + i + '%%', function() { return m.html; });
       });
 
       return html;
@@ -694,7 +694,7 @@ export function getWebviewContent(
 
     // Process HTML with bionic reading
     function processBionic(html, fixationPoint) {
-      const skipTags = ['CODE', 'PRE', 'A', 'SCRIPT', 'STYLE', 'MATH'];
+      const skipTags = ['CODE', 'PRE', 'A', 'SCRIPT', 'STYLE', 'MATH', 'math'];
       const skipClasses = ['math-inline', 'math-display'];
       const container = document.createElement('div');
       container.innerHTML = html;
