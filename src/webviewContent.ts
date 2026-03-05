@@ -10,7 +10,8 @@ export interface PreviewSettings {
 
 export function getWebviewContent(
   webview: vscode.Webview,
-  settings: PreviewSettings
+  settings: PreviewSettings,
+  katexCssUri: string
 ): string {
   const nonce = getNonce();
 
@@ -19,7 +20,8 @@ export function getWebviewContent(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+  <link rel="stylesheet" href="${katexCssUri}">
   <title>Bionic Preview</title>
   <style>
     :root {
@@ -281,11 +283,11 @@ export function getWebviewContent(
       overflow-x: auto;
     }
 
-    .math-display math {
+    .math-display .katex {
       font-size: 1.2em;
     }
 
-    .math-inline math {
+    .math-inline .katex {
       font-size: 1.1em;
     }
   </style>
@@ -695,7 +697,7 @@ export function getWebviewContent(
     // Process HTML with bionic reading
     function processBionic(html, fixationPoint) {
       const skipTags = ['CODE', 'PRE', 'A', 'SCRIPT', 'STYLE', 'MATH', 'math'];
-      const skipClasses = ['math-inline', 'math-display'];
+      const skipClasses = ['math-inline', 'math-display', 'katex'];
       const container = document.createElement('div');
       container.innerHTML = html;
 

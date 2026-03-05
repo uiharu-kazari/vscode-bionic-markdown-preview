@@ -30,37 +30,46 @@ function preprocessMath(markdown: string): { processed: string; mathRendered: Ma
     return placeholder;
   });
 
-  // Display math: $$...$$
-  processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
+  const renderMath = (math: string, display: boolean): string => {
     const id = `MATHBLOCK${mathRendered.length}ENDMATH`;
     try {
       const html = katex.renderToString(math.trim(), {
-        displayMode: true,
+        displayMode: display,
         throwOnError: false,
-        output: 'mathml',
+        output: 'html',
+        trust: true,
+        strict: false,
+        macros: {
+          '\\R': '\\mathbb{R}',
+          '\\N': '\\mathbb{N}',
+          '\\Z': '\\mathbb{Z}',
+          '\\Q': '\\mathbb{Q}',
+          '\\C': '\\mathbb{C}',
+        },
       });
-      mathRendered.push({ id, html, display: true });
+      mathRendered.push({ id, html, display });
     } catch {
-      mathRendered.push({ id, html: `<code>${math.trim()}</code>`, display: true });
+      mathRendered.push({ id, html: `<code>${math.trim()}</code>`, display });
     }
     return id;
+  };
+
+  // Display math: \[...\]
+  processed = processed.replace(/\\\[([\s\S]+?)\\\]/g, (_, math) => renderMath(math, true));
+
+  // Display math: \begin{...}...\end{...}
+  processed = processed.replace(/\\begin\{([^}]+)\}([\s\S]*?)\\end\{\1\}/g, (match, env, body) => {
+    return renderMath(match, true);
   });
 
+  // Display math: $$...$$
+  processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => renderMath(math, true));
+
+  // Inline math: \(...\)
+  processed = processed.replace(/\\\(([\s\S]+?)\\\)/g, (_, math) => renderMath(math, false));
+
   // Inline math: $...$ (must contain a letter or backslash)
-  processed = processed.replace(/(?<![\\$])\$(?!\s)([^\$\n]*[a-zA-Z\\][^\$\n]*?)(?<!\s)\$(?!\$)/g, (_, math) => {
-    const id = `MATHBLOCK${mathRendered.length}ENDMATH`;
-    try {
-      const html = katex.renderToString(math.trim(), {
-        displayMode: false,
-        throwOnError: false,
-        output: 'mathml',
-      });
-      mathRendered.push({ id, html, display: false });
-    } catch {
-      mathRendered.push({ id, html: `<code>${math.trim()}</code>`, display: false });
-    }
-    return id;
-  });
+  processed = processed.replace(/(?<![\\$])\$(?!\s)([^\$\n]*[a-zA-Z\\][^\$\n]*?)(?<!\s)\$(?!\$)/g, (_, math) => renderMath(math, false));
 
   // Restore code blocks (use function replacement to avoid $ special patterns)
   for (const { placeholder, original } of codeProtections) {
@@ -93,7 +102,10 @@ export class BionicPreviewPanel {
       {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media')],
+        localResourceRoots: [
+          vscode.Uri.joinPath(extensionUri, 'media'),
+          vscode.Uri.joinPath(extensionUri, 'node_modules', 'katex', 'dist'),
+        ],
       }
     );
 
@@ -178,12 +190,16 @@ export class BionicPreviewPanel {
     const webview = this._panel.webview;
     const config = vscode.workspace.getConfiguration('bionicPreview');
 
+    const katexCssUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'node_modules', 'katex', 'dist', 'katex.min.css')
+    );
+
     this._panel.webview.html = getWebviewContent(webview, {
       fixationPoint: config.get('fixationPoint', 3),
       opacity: config.get('opacity', 0.7),
       gradientTheme: config.get('gradientTheme', 'none'),
       fontSize: config.get('fontSize', 16),
       lineHeight: config.get('lineHeight', 1.8),
-    });
+    }, katexCssUri.toString());
   }
 }
