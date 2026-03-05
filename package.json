@@ -2,7 +2,7 @@
   "name": "bionic-markdown-preview",
   "displayName": "Bionic Markdown Preview",
   "description": "Preview Markdown with bold text highlighting and gradient themes for faster, more focused reading",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "publisher": "BionicMarkdown",
   "icon": "media/icon.png",
   "license": "MIT",
@@ -36,12 +36,12 @@
     "commands": [
       {
         "command": "bionicPreview.open",
-        "title": "Open Bionic Preview",
+        "title": "Bionic Preview",
         "category": "Bionic Markdown"
       },
       {
         "command": "bionicPreview.openToSide",
-        "title": "Open Bionic Preview to the Side",
+        "title": "Bionic Preview to Side",
         "category": "Bionic Markdown"
       }
     ],
