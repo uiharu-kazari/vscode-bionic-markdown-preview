@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { parseMarkdown, applyBionicText } from './markdownParser';
 
 export interface PreviewSettings {
   fixationPoint: number;
@@ -547,152 +548,12 @@ export function getWebviewContent(
     }
 
     // Simple markdown parser (basic implementation)
-    function parseMarkdown(md, mathRendered) {
-      // Extract math placeholders first to protect from transformations
-      const mathPlaceholders = [];
-      if (mathRendered && mathRendered.length > 0) {
-        for (const m of mathRendered) {
-          if (md.includes(m.id)) {
-            const placeholder = '%%MATH_' + mathPlaceholders.length + '%%';
-            const wrapper = m.display
-              ? '<div class="math-display">' + m.html + '</div>'
-              : '<span class="math-inline">' + m.html + '</span>';
-            mathPlaceholders.push({ placeholder, html: wrapper });
-            md = md.replace(m.id, placeholder);
-          }
-        }
-      }
-
-      // Extract code blocks first to protect them from other transformations
-      const codeBlocks = [];
-      const inlineCodes = [];
-
-      // Extract fenced code blocks
-      let html = md.replace(/\`\`\`([\\s\\S]*?)\`\`\`/g, (match, code) => {
-        const placeholder = '%%CODEBLOCK_' + codeBlocks.length + '%%';
-        // Escape HTML in code blocks
-        const escapedCode = code
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-        codeBlocks.push('<pre><code>' + escapedCode + '</code></pre>');
-        return placeholder;
-      });
-
-      // Extract inline code
-      html = html.replace(/\`([^\`]+)\`/g, (match, code) => {
-        const placeholder = '%%INLINECODE_' + inlineCodes.length + '%%';
-        // Escape HTML in inline code
-        const escapedCode = code
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-        inlineCodes.push('<code>' + escapedCode + '</code>');
-        return placeholder;
-      });
-
-      // Now process the rest - escape HTML first
-      html = html
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-
-        // Headers
-        .replace(/^###### (.*$)/gm, '<h6>$1</h6>')
-        .replace(/^##### (.*$)/gm, '<h5>$1</h5>')
-        .replace(/^#### (.*$)/gm, '<h4>$1</h4>')
-        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-
-        // Bold and italic
-        .replace(/\\*\\*\\*(.+?)\\*\\*\\*/g, '<strong><em>$1</em></strong>')
-        .replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>')
-        .replace(/\\*(.+?)\\*/g, '<em>$1</em>')
-        .replace(/___(.+?)___/g, '<strong><em>$1</em></strong>')
-        .replace(/__(.+?)__/g, '<strong>$1</strong>')
-        .replace(/_(.+?)_/g, '<em>$1</em>')
-
-        // Strikethrough
-        .replace(/~~(.+?)~~/g, '<del>$1</del>')
-
-        // Links and images
-        .replace(/!\\[([^\\]]*)\\]\\(([^)]+)\\)/g, '<img src="$2" alt="$1">')
-        .replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2">$1</a>')
-
-        // Blockquotes
-        .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
-
-        // Horizontal rules
-        .replace(/^(---|\\*\\*\\*|___)$/gm, '<hr>')
-
-        // Unordered lists
-        .replace(/^[\\*\\-] (.*$)/gm, '<li>$1</li>')
-
-        // Ordered lists
-        .replace(/^\\d+\\. (.*$)/gm, '<li>$1</li>')
-
-        // Paragraphs (double newlines)
-        .replace(/\\n\\n+/g, '</p><p>')
-
-        // Single line breaks
-        .replace(/\\n/g, '<br>');
-
-      // Wrap in paragraph if needed
-      if (!html.startsWith('<')) {
-        html = '<p>' + html + '</p>';
-      }
-
-      // Clean up consecutive blockquotes
-      html = html.replace(/<\\/blockquote><blockquote>/g, '<br>');
-
-      // Wrap lists
-      html = html.replace(/(<li>.*<\\/li>)/gs, '<ul>$1</ul>');
-      html = html.replace(/<\\/ul><ul>/g, '');
-
-      // Restore code blocks (function replacement avoids $ special patterns)
-      codeBlocks.forEach((block, i) => {
-        html = html.replace('%%CODEBLOCK_' + i + '%%', function() { return block; });
-      });
-
-      // Restore inline code
-      inlineCodes.forEach((code, i) => {
-        html = html.replace('%%INLINECODE_' + i + '%%', function() { return code; });
-      });
-
-      // Restore math blocks
-      mathPlaceholders.forEach((m, i) => {
-        // Display math may be wrapped in <p> tags
-        html = html.replace('<p>%%MATH_' + i + '%%</p>', function() { return m.html; });
-        html = html.replace('%%MATH_' + i + '%%', function() { return m.html; });
-      });
-
-      return html;
-    }
+    const parseMarkdown = ${parseMarkdown.toString()};
 
     // Apply bionic reading to text
     // Uses exact text-vide algorithm: max(1, floor(length * fixationPoint / 6))
     // UI fixationPoint 1-5: higher = more bold
-    function applyBionicReading(text, fixationPoint) {
-      const words = text.split(/(\\s+)/);
-      return words.map(word => {
-        if (!word.trim()) return word;
-
-        const length = word.length;
-        if (length <= 1) return '<b>' + word + '</b>';
-
-        // text-vide formula: max(1, floor(length * fixationPoint / 6))
-        const boldLength = Math.max(1, Math.min(Math.floor(length * fixationPoint / 6), length));
-
-        const boldPart = word.slice(0, boldLength);
-        const dimPart = word.slice(boldLength);
-
-        if (dimPart) {
-          return '<b>' + boldPart + '</b><span class="bionic-dim">' + dimPart + '</span>';
-        }
-        return '<b>' + boldPart + '</b>';
-      }).join('');
-    }
+    const applyBionicReading = ${applyBionicText.toString()};
 
     // Process HTML with bionic reading
     function processBionic(html, fixationPoint) {

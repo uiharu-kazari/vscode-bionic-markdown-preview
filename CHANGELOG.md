@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.7] - 2026-06-17
+
+### Fixed
+- Render GFM pipe tables in the preview. The webview parser previously had no
+  table support, so tables fell through to plain paragraph text.
+
+### Changed
+- Extracted the webview markdown parser and math preprocessor into dedicated,
+  unit-tested modules; the webview now runs the same tested parser.
+
 ## [0.2.1] - 2026-01-16
 
 ### Changed

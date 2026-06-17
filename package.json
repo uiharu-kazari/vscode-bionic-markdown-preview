@@ -2,7 +2,7 @@
   "name": "bionic-markdown-preview",
   "displayName": "Bionic Markdown Preview",
   "description": "Preview Markdown with bold text highlighting and gradient themes for faster, more focused reading",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "publisher": "BionicMarkdown",
   "icon": "media/icon.png",
   "license": "MIT",
@@ -127,6 +127,8 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint src --ext ts",
     "package": "vsce package",
     "publish": "vsce publish"
@@ -137,7 +139,8 @@
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.80.0",
     "@vscode/vsce": "^2.22.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^2.1.9"
   },
   "dependencies": {
     "dompurify": "^3.3.1",
