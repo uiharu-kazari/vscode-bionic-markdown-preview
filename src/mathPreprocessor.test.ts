@@ -60,3 +60,32 @@ describe('preprocessMath', () => {
     expect(mathRendered).toHaveLength(0);
   });
 });
+
+
+describe('untrusted math', () => {
+  it('blocks HTML and external-resource commands', () => {
+    for (const math of ['\\href{javascript:alert(1)}{x}', '\\includegraphics{https://example.com/x.png}', '\\htmlClass{attack}{x}']) {
+      const result = preprocessMath('$' + math + '$').mathRendered[0].html;
+      expect(result).not.toContain('<a ');
+      expect(result).not.toContain('<img');
+      expect(result).not.toContain('class="attack"');
+    }
+  });
+  it('provides MathML for assistive technology', () => {
+    expect(preprocessMath('$x^2$').mathRendered[0].html).toContain('<math');
+  });
+  it('does not collide with a literal placeholder already in the document', () => {
+    const result = preprocessMath('MATHBLOCK0ENDMATH and $x$');
+    expect(result.mathRendered[0].id).not.toBe('MATHBLOCK0ENDMATH');
+    expect(result.processed).toContain('MATHBLOCK0ENDMATH and ');
+  });
+});
+
+
+describe('Markdown code boundaries', () => {
+  it.each(['````\n$x$\n```\n$x$\n````', '~~~\n$x$\n~~~', '```\n$x$', '    $x$\n', '``a `$x$` b``'])('leaves math inside code unchanged: %s', markdown => {
+    const result = preprocessMath(markdown);
+    expect(result.processed).toBe(markdown);
+    expect(result.mathRendered).toHaveLength(0);
+  });
+});

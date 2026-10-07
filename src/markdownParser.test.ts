@@ -47,7 +47,7 @@ describe('parseMarkdown — GFM tables (the regression this module fixes)', () =
 
   it('applies inline formatting inside cells', () => {
     const html = parseMarkdown('| **bold** | a |\n| --- | --- |\n| x | y |');
-    expect(html).toContain('<th><strong>bold</strong></th>');
+    expect(html).toMatch(/<th>\s*<strong>bold<\/strong><\/th>/);
   });
 });
 
@@ -60,7 +60,7 @@ describe('parseMarkdown — core blocks', () => {
   it('renders bold, italic and strikethrough', () => {
     expect(parseMarkdown('**b**')).toContain('<strong>b</strong>');
     expect(parseMarkdown('*i*')).toContain('<em>i</em>');
-    expect(parseMarkdown('~~s~~')).toContain('<del>s</del>');
+    expect(parseMarkdown('~~s~~')).toContain('<s>s</s>');
   });
 
   it('renders unordered and ordered lists', () => {
@@ -78,7 +78,7 @@ describe('parseMarkdown — core blocks', () => {
   });
 
   it('renders blockquotes', () => {
-    expect(parseMarkdown('> quoted')).toContain('<blockquote>quoted</blockquote>');
+    expect(parseMarkdown('> quoted')).toMatch(/<blockquote>\s*<p>quoted<\/p>\s*<\/blockquote>/);
   });
 
   it('escapes raw HTML in body text so it cannot inject markup', () => {
@@ -114,7 +114,7 @@ describe('parseMarkdown — math placeholders', () => {
     ];
     const html = parseMarkdown('inline MATHBLOCK0ENDMATH\n\nMATHBLOCK1ENDMATH', math);
     expect(html).toContain('<span class="math-inline"><span>x</span></span>');
-    expect(html).toContain('<div class="math-display"><span>y</span></div>');
+    expect(html).toContain('<span class="math-display"><span>y</span></span>');
     // display math placeholder is not left wrapped in a paragraph
     expect(html).not.toMatch(/<p>\s*<div class="math-display"/);
   });
@@ -144,5 +144,41 @@ describe('applyBionicText', () => {
     const out = applyBionicText('a<b', 3);
     expect(out).not.toContain('<b>a<b');
     expect(out).toContain('&lt;');
+  });
+});
+
+
+describe('safe Markdown and CommonMark behavior', () => {
+  it('cannot inject event attributes through a link destination or image alt text', () => {
+    for (const md of ['[open](https://example.com/"onclick="alert)', '![" onerror="alert(1)](image.png)']) {
+      const html = parseMarkdown(md);
+      expect(html).not.toMatch(/(?:href|src)="[^"]*"\s+(?:onerror|onclick)=/);
+      expect(html).not.toMatch(/alt=""/);
+    }
+  });
+  it('rejects JavaScript, data HTML, and command links', () => {
+    for (const url of ['javascript:alert(1)', 'data:text/html,test', 'vbscript:msgbox(1)', 'command:workbench.action.files.openFile', 'file:///etc/passwd']) {
+      expect(parseMarkdown(`[open](${url})`)).not.toContain('<a href=');
+    }
+  });
+  it('supports nested lists, reference links, and literal underscores', () => {
+    const html = parseMarkdown('- parent\n  - child\n\n[link][ref]\n\n[ref]: https://example.com\n\nfile_name_here');
+    expect((html.match(/<ul>/g) || [])).toHaveLength(2);
+    expect(html).toContain('href="https://example.com"');
+    expect(html).toContain('file_name_here');
+  });
+  it('requires a separator row for a table and accepts tables without outer pipes', () => {
+    expect(parseMarkdown('| ordinary | prose |')).not.toContain('<table>');
+    expect(parseMarkdown('Name | Age\n--- | ---\nAlice | 30')).toContain('<table>');
+  });
+  it('preserves tilde fences and multi-backtick inline code', () => {
+    const html = parseMarkdown('~~~ts\n**literal**\n~~~\n\n``a ` b``');
+    expect(html).toContain('**literal**');
+    expect(html).toContain('<code>a ` b</code>');
+  });
+  it('never restores math inside code or image attributes', () => {
+    const math = [{ id: 'MATHBLOCK0ENDMATH', html: '<span class="katex">x</span>', display: false }];
+    const html = parseMarkdown('`MATHBLOCK0ENDMATH` ![MATHBLOCK0ENDMATH](MATHBLOCK0ENDMATH)', math);
+    expect(html).not.toContain('class="katex"');
   });
 });

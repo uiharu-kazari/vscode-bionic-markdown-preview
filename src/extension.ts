@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor((editor) => {
       if (editor && editor.document.languageId === 'markdown') {
-        BionicPreviewPanel.updateContent(editor.document.getText());
+        BionicPreviewPanel.setDocument(editor.document);
       }
     })
   );
@@ -30,13 +30,8 @@ export function activate(context: vscode.ExtensionContext) {
   // Auto-update preview when document text changes
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument((event) => {
-      const activeEditor = vscode.window.activeTextEditor;
-      if (
-        activeEditor &&
-        event.document === activeEditor.document &&
-        event.document.languageId === 'markdown'
-      ) {
-        BionicPreviewPanel.updateContent(event.document.getText());
+      if (event.document.languageId === 'markdown') {
+        BionicPreviewPanel.updateContent(event.document);
       }
     })
   );
@@ -52,5 +47,5 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  // Clean up
+  BionicPreviewPanel.currentPanel?.dispose();
 }

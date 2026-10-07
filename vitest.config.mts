@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitest/config';
-import path from 'path';
+import { fileURLToPath } from 'node:url';
 
 // The extension imports the `vscode` module (only for types at runtime in the
 // modules we test). Alias it to a tiny stub so test files can import the real
@@ -8,7 +8,7 @@ import path from 'path';
 export default defineConfig({
   resolve: {
     alias: {
-      vscode: path.resolve(__dirname, 'src/test/vscode-stub.ts'),
+      vscode: fileURLToPath(new URL('./src/test/vscode-stub.ts', import.meta.url)),
     },
   },
   test: {

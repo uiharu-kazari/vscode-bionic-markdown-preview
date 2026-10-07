@@ -1,19 +1,15 @@
 import * as vscode from 'vscode';
-import { parseMarkdown, applyBionicText } from './markdownParser';
+import { applyBionicText } from './markdownParser';
 
-export interface PreviewSettings {
-  fixationPoint: number;
-  opacity: number;
-  gradientTheme: string;
-  fontSize: number;
-  lineHeight: number;
-}
+import { normalizeSettings, type PreviewSettings } from './previewSettings';
+export type { PreviewSettings } from './previewSettings';
 
 export function getWebviewContent(
   webview: vscode.Webview,
   settings: PreviewSettings,
   katexCssUri: string
 ): string {
+  settings = normalizeSettings(settings);
   const nonce = getNonce();
 
   return `<!DOCTYPE html>
@@ -21,7 +17,7 @@ export function getWebviewContent(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource}; img-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
   <link rel="stylesheet" href="${katexCssUri}">
   <title>Bionic Preview</title>
   <style>
@@ -79,6 +75,8 @@ export function getWebviewContent(
       color: var(--vscode-descriptionForeground);
       transition: color 0.2s;
     }
+
+    button:focus-visible { outline: 2px solid var(--vscode-focusBorder); outline-offset: -2px; }
 
     .toolbar-toggle:hover {
       color: var(--vscode-foreground);
@@ -252,6 +250,8 @@ export function getWebviewContent(
     table {
       border-collapse: collapse;
       width: 100%;
+      display: block;
+      overflow-x: auto;
       margin: 1em 0;
     }
 
@@ -270,11 +270,16 @@ export function getWebviewContent(
       height: auto;
     }
 
+    .image-placeholder { color: var(--vscode-descriptionForeground); font-style: italic; }
+
     .empty-state {
       text-align: center;
       color: var(--vscode-descriptionForeground);
       padding: 40px;
     }
+
+    @media (max-width: 480px) { #preview { padding: 16px; } .toolbar { gap: 10px; padding: 8px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
 
     /* Math formula styles */
     .math-display {
@@ -297,19 +302,19 @@ export function getWebviewContent(
   <div class="toolbar-container">
     <div class="toolbar" id="toolbar">
       <div class="toolbar-group">
-        <span class="toolbar-label">Leading</span>
+        <label class="toolbar-label" for="fixation">Emphasis</label>
         <input type="range" id="fixation" min="1" max="5" step="1" value="${settings.fixationPoint}">
         <span class="value-display" id="fixation-value">${settings.fixationPoint}</span>
       </div>
 
       <div class="toolbar-group">
-        <span class="toolbar-label">Opacity</span>
-        <input type="range" id="opacity" min="0" max="100" step="1" value="${Math.round(settings.opacity * 100)}">
+        <label class="toolbar-label" for="opacity">Opacity</label>
+        <input type="range" id="opacity" min="10" max="100" step="1" value="${Math.round(settings.opacity * 100)}">
         <span class="value-display" id="opacity-value">${Math.round(settings.opacity * 100)}%</span>
       </div>
 
       <div class="toolbar-group">
-        <span class="toolbar-label">Gradient</span>
+        <label class="toolbar-label" for="gradient">Gradient</label>
         <select id="gradient">
           <option value="none">None</option>
           <option value="ocean">Ocean</option>
@@ -330,7 +335,7 @@ export function getWebviewContent(
         <svg class="toolbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
         </svg>
-        <input type="range" id="fontSize" min="12" max="24" step="1" value="${settings.fontSize}">
+        <input type="range" id="fontSize" aria-label="Font size" min="10" max="32" step="1" value="${settings.fontSize}">
         <span class="value-display" id="fontSize-value">${settings.fontSize}</span>
       </div>
 
@@ -338,22 +343,22 @@ export function getWebviewContent(
         <svg class="toolbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
-        <input type="range" id="lineHeight" min="1.2" max="2" step="0.1" value="${settings.lineHeight}">
+        <input type="range" id="lineHeight" aria-label="Line height" min="1" max="3" step="0.1" value="${settings.lineHeight}">
         <span class="value-display" id="lineHeight-value">${settings.lineHeight}</span>
       </div>
     </div>
-    <button class="toolbar-toggle" id="toolbar-toggle" title="Toggle toolbar">
+    <button class="toolbar-toggle" id="toolbar-toggle" aria-label="Toggle reading settings" aria-controls="toolbar" aria-expanded="true" title="Toggle toolbar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="18 15 12 9 6 15"></polyline>
       </svg>
     </button>
   </div>
 
-  <div id="preview">
+  <main id="preview" aria-label="Markdown preview">
     <div class="empty-state">
       <p>Open a Markdown file to see the bionic preview</p>
     </div>
-  </div>
+  </main>
 
   <script nonce="${nonce}">
     // Gradient theme configurations
@@ -462,17 +467,8 @@ export function getWebviewContent(
     };
 
     // Current settings
-    let currentSettings = {
-      fixationPoint: ${settings.fixationPoint},
-      opacity: ${settings.opacity},
-      gradientTheme: '${settings.gradientTheme}',
-      fontSize: ${settings.fontSize},
-      lineHeight: ${settings.lineHeight},
-    };
-
-    // Store current markdown and math data
-    let currentMarkdown = '';
-    let currentMathRendered = [];
+    let currentSettings = ${JSON.stringify(settings)};
+    let currentHtml = '';
 
     const vscode = acquireVsCodeApi();
     const preview = document.getElementById('preview');
@@ -500,7 +496,16 @@ export function getWebviewContent(
     toolbarToggle.addEventListener('click', () => {
       toolbar.classList.toggle('hidden');
       toolbarToggle.classList.toggle('collapsed');
+      const collapsed = toolbar.classList.contains('hidden');
+      toolbarToggle.setAttribute('aria-expanded', String(!collapsed));
+      vscode.setState({ toolbarCollapsed: collapsed });
     });
+
+    if (vscode.getState()?.toolbarCollapsed) {
+      toolbar.classList.add('hidden'); toolbarToggle.classList.add('collapsed'); toolbarToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function saveSetting(key) { vscode.postMessage({ type: 'setting', key, value: currentSettings[key] }); }
 
     // Toolbar event listeners
     fixationInput.addEventListener('input', (e) => {
@@ -534,6 +539,16 @@ export function getWebviewContent(
       render();
     });
 
+    fixationInput.addEventListener('change', () => saveSetting('fixationPoint'));
+
+    opacityInput.addEventListener('change', () => saveSetting('opacity'));
+
+    gradientSelect.addEventListener('change', () => saveSetting('gradientTheme'));
+
+    fontSizeInput.addEventListener('change', () => saveSetting('fontSize'));
+
+    lineHeightInput.addEventListener('change', () => saveSetting('lineHeight'));
+
     function updateGradientPreview(themeName) {
       const theme = GRADIENT_THEMES[themeName];
       gradientPreview.innerHTML = '';
@@ -546,9 +561,6 @@ export function getWebviewContent(
         });
       }
     }
-
-    // Simple markdown parser (basic implementation)
-    const parseMarkdown = ${parseMarkdown.toString()};
 
     // Apply bionic reading to text
     // Uses exact text-vide algorithm: max(1, floor(length * fixationPoint / 6))
@@ -589,12 +601,9 @@ export function getWebviewContent(
       const theme = GRADIENT_THEMES[themeName];
       if (!theme || !theme.colors) return;
 
-      // Detect if dark theme
-      const bodyStyles = getComputedStyle(document.body);
-      const bgColor = bodyStyles.getPropertyValue('--vscode-editor-background');
-      const isDark = bgColor.includes('rgb') ?
-        bgColor.match(/\\d+/g).reduce((a, b) => a + parseInt(b), 0) / 3 < 128 :
-        true;
+      // VS Code supplies the active theme classes, including high-contrast modes.
+      if (document.body.classList.contains('vscode-high-contrast') || document.body.classList.contains('vscode-high-contrast-light')) return;
+      const isDark = !document.body.classList.contains('vscode-light');
 
       // Adjust palette for theme
       const adjustedPalette = theme.colors.map(color => {
@@ -620,7 +629,7 @@ export function getWebviewContent(
 
     // Render the preview
     function render() {
-      if (!currentMarkdown) {
+      if (!currentHtml) {
         preview.innerHTML = '<div class="empty-state"><p>Open a Markdown file to see the bionic preview</p></div>';
         return;
       }
@@ -631,7 +640,7 @@ export function getWebviewContent(
       document.documentElement.style.setProperty('--dim-opacity', currentSettings.opacity);
 
       // Parse markdown (with pre-rendered math)
-      let html = parseMarkdown(currentMarkdown, currentMathRendered);
+      let html = currentHtml;
 
       // Apply bionic reading
       html = processBionic(html, currentSettings.fixationPoint);
@@ -651,8 +660,7 @@ export function getWebviewContent(
 
       switch (message.type) {
         case 'update':
-          currentMarkdown = message.content;
-          currentMathRendered = message.mathRendered || [];
+          currentHtml = typeof message.html === 'string' ? message.html : '';
           render();
           break;
 

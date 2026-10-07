@@ -93,12 +93,10 @@ describe('content pipeline (preprocessMath → parseMarkdown → DOM)', () => {
 describe('getWebviewContent', () => {
   const fakeWebview = { cspSource: 'vscode-resource:' } as never;
 
-  it('ships the fixed parser (with table handling) into the webview HTML', () => {
+  it('renders host-generated Markdown without an untested browser parser', () => {
     const html = getWebviewContent(fakeWebview, SETTINGS, 'katex.css');
-    // the injected parser source is present in the page
-    expect(html).toContain('processTables');
-    expect(html).toContain('<thead>');
-    // and the table CSS the parser output relies on
+    expect(html).not.toContain('const parseMarkdown =');
+    expect(html).toContain("currentHtml = typeof message.html");
     expect(html).toContain('th, td');
   });
 

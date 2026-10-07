@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.8] - 2026-10-08
+
+### Fixed
+- Replaced the regex Markdown parser with MarkdownIt for safe URL/attribute handling, nested lists, reference links, and CommonMark code fences.
+- Disabled trusted KaTeX HTML/link/image commands and preserved all Markdown code regions during math extraction.
+- Wait for webview readiness before sending initial content, and continue live updates while the preview has focus.
+- Save validated reading preferences, align toolbar ranges with settings, and name controls for assistive technology.
+- Detect VS Code theme classes correctly, preserve high-contrast text colors, and respect reduced motion.
+
+### Added
+- Document-relative local images with scoped resource roots; remote images remain blocked.
+- Accessible MathML alongside KaTeX visual output.
+- Executed webview-script and source-lifecycle regression tests.
+
+### Changed
+- Bundled runtime dependencies; removed unused packages and upgraded vulnerable dependencies.
+- Clarified emphasis levels and removed unverified reading-performance claims.
+
 ## [0.2.7] - 2026-06-17
 
 ### Fixed
