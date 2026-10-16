@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.9] - 2026-10-17
+
+### Changed
+- Adopt the Split Studio icon for the extension listing and document-preview tab.
+
 ## [0.2.8] - 2026-10-08
 
 ### Fixed

@@ -27,6 +27,7 @@ export class BionicPreviewPanel {
       retainContextWhenHidden: true,
       localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media')],
     });
+    panel.iconPath = vscode.Uri.joinPath(extensionUri, 'media', 'icon.svg');
     BionicPreviewPanel.currentPanel = new BionicPreviewPanel(panel, extensionUri,
       document?.languageId === 'markdown' ? document : undefined);
   }

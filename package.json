@@ -2,7 +2,7 @@
   "name": "bionic-markdown-preview",
   "displayName": "Bionic Markdown Preview",
   "description": "Preview Markdown with adjustable word emphasis, reading settings, and optional gradient themes",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "publisher": "BionicMarkdown",
   "icon": "media/icon.png",
   "license": "MIT",
